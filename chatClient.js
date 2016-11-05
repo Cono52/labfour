@@ -1,6 +1,6 @@
 let net = require('net')
 
-let HOST = '192.168.1.7'
+let HOST = '0.0.0.0'
 let PORT = 3000
 
 let client = new net.Socket()
@@ -10,6 +10,10 @@ client.connect(PORT, HOST, function() {
 			+"CLIENT_IP: 192.127.1.6\n"
 			+"PORT: 3000\n"
 			+"CLIENT_NAME: cono52\n")
+	client.write("LEAVE_CHATROOM: 1\n"
+			+"JOIN_ID: 1\n"
+			+"CLIENT_NAME: cono52\n")
+
 })
 
 // Add a 'data' event handler for the client socket
