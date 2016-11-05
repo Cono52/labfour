@@ -7,6 +7,7 @@ const toobusy = require('toobusy-js')
 let port = 3000
 
 let clients = []
+
 /*Try get specified port*/
 if(!process.argv[2]){
 	console.log("You didnt enter a port...using port 3000")
@@ -29,6 +30,15 @@ for (let k in interfaces) {
 
 console.log(addresses)
 
+/*splits message to components*/
+function chatMessageSplit(data){
+	let compData = ''
+	compData += data
+	let array = compData.split('\n');
+	array = array.slice(0,array.length-1)
+	return array;
+}
+
 const requestHandler = (sock) => {
 	if(toobusy()){
 		sock.destroy();
@@ -38,10 +48,14 @@ const requestHandler = (sock) => {
 		console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort)
 		sock.on('data', function(data) {
 			if(data.includes("JOIN_CHATROOM:")){
-				let compData = ''
-				compData += data
-				let array = compData.split('\n');
-				array = array.slice(0,array.length-1);
+				console.log(chatMessageSplit(data))
+				clients.push(sock)
+				console.log("Clients:"+clients.length)
+			}
+			else if(data.includes("LEAVE_CHATROOM")){
+				console.log(chatMessageSplit(data))
+				clients.splice(clients.indexOf(sock), 1)
+				console.log("Clients:"+clients.length)
 			}
 			else if(data.includes("HELO")){
 				sock.write(data
