@@ -9,10 +9,9 @@ let port = 3000
 let clients = []
 
 /*Try get specified port*/
-if(!process.argv[2]){
+if (!process.argv[2]) {
 	console.log("You didnt enter a port...using port 3000")
-}
-else{
+} else {
 	port = process.argv[2];
 }
 
@@ -31,46 +30,41 @@ for (let k in interfaces) {
 console.log(addresses)
 
 /*splits message to components*/
-function chatMessageSplit(data){
+function chatMessageSplit(data) {
 	let compData = ''
 	compData += data
 	let array = compData.split('\n');
-	array = array.slice(0,array.length-1)
+	array = array.slice(0, array.length - 1)
 	return array;
 }
 
 const requestHandler = (sock) => {
-	if(toobusy()){
+	if (toobusy()) {
 		sock.destroy();
-	}
-	else
-	{
-		console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort)
-		sock.on('data', function(data) {
-			if(data.includes("JOIN_CHATROOM:")){
+	} else {
+		console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
+		sock.on('data', function (data) {
+			if (data.includes("JOIN_CHATROOM:")) {
 				console.log(chatMessageSplit(data))
 				clients.push(sock)
-				console.log("Clients:"+clients.length)
-			}
-			else if(data.includes("LEAVE_CHATROOM")){
+				console.log("Clients:" + clients.length)
+			} else if (data.includes("LEAVE_CHATROOM")) {
 				console.log(chatMessageSplit(data))
 				clients.splice(clients.indexOf(sock), 1)
-				console.log("Clients:"+clients.length)
-			}
-			else if(data.includes("HELO")){
-				sock.write(data
-					+"IP:"+addresses+"\n"
-					+"Port:"+port+"\n"
-					+"StudentID:13323109\n")
+				console.log("Clients:" + clients.length)
+			} else if (data.includes("HELO")) {
+				sock.write(data +
+					"IP:" + addresses + "\n" +
+					"Port:" + port + "\n" +
+					"StudentID:13323109\n")
 
-			}
-			else if(data.includes("KILL_SERVICE")){
+			} else if (data.includes("KILL_SERVICE")) {
 				sock.destroy();
 			}
 		})
 
-		sock.on('close', function(data) {
-			console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort)
+		sock.on('close', function (data) {
+			console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
 		})
 	}
 }
