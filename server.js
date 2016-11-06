@@ -58,9 +58,6 @@ const requestHandler = (sock) => {
 					"IP:" + addresses + "\n" +
 					"Port:" + port + "\n" +
 					"StudentID:13323109\n")
-			} else if (data.includes("KILL_SERVICE")) {
-				clients.splice(clients.indexOf(sock), 1)
-				sock.destroy()
 			}
 		})
 
