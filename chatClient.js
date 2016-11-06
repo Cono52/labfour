@@ -10,10 +10,11 @@ client.connect(PORT, HOST, function () {
 		"CLIENT_IP: 192.127.1.6\n" +
 		"PORT: 3000\n" +
 		"CLIENT_NAME: cono52\n")
-	client.write("LEAVE_CHATROOM: 1\n" +
+	setTimeout(function() {
+		client.write("LEAVE_CHATROOM: 1\n" +
 		"JOIN_ID: 1\n" +
 		"CLIENT_NAME: cono52\n")
-
+	}, 1000);
 })
 
 // Add a 'data' event handler for the client socket
