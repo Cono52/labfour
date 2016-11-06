@@ -45,9 +45,15 @@ const requestHandler = (sock) => {
 		console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
 		sock.on('data', function (data) {
 			if (data.includes("JOIN_CHATROOM:")) {
-				console.log(chatMessageSplit(data))
+				let comps = chatMessageSplit(data)
 				clients.push(sock)
 				console.log("Clients:" + clients.length)
+
+				sock.write("JOINED_CHATROOM: "+comps[0].split(' ')[1] + "\n"
+							+ "SERVER_IP: "+ addresses + "\n"
+							+ "PORT: " + port + "\n"
+							+ "ROOM_REF: " +"1"+ "\n"
+							+ "JOIN_ID: " + clients.indexOf(sock) + "\n")
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				console.log(chatMessageSplit(data))
 				clients.splice(clients.indexOf(sock), 1)
