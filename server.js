@@ -51,19 +51,21 @@ const requestHandler = (sock) => {
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				console.log(chatMessageSplit(data))
 				clients.splice(clients.indexOf(sock), 1)
+				sock.destroy()
 				console.log("Clients:" + clients.length)
 			} else if (data.includes("HELO")) {
 				sock.write(data +
 					"IP:" + addresses + "\n" +
 					"Port:" + port + "\n" +
 					"StudentID:13323109\n")
-
 			} else if (data.includes("KILL_SERVICE")) {
-				sock.destroy();
+				clients.splice(clients.indexOf(sock), 1)
+				sock.destroy()
 			}
 		})
 
 		sock.on('close', function (data) {
+			clients.splice(clients.indexOf(sock), 1)
 			console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
 		})
 	}
