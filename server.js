@@ -51,7 +51,6 @@ const requestHandler = (sock) => {
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				console.log(chatMessageSplit(data))
 				clients.splice(clients.indexOf(sock), 1)
-				sock.destroy()
 				console.log("Clients:" + clients.length)
 			} else if (data.includes("HELO")) {
 				sock.write(data +
