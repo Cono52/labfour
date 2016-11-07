@@ -49,15 +49,15 @@ const requestHandler = (sock) => {
 				console.log(comps)
 				clients.push(sock)
 				console.log("Clients:" + clients.length)
-				sock.write("JOINED_CHATROOM: "+comps[0].split(' ')[1] + "\n"
-							+ "SERVER_IP: "+ addresses + "\n"
-							+ "PORT: " + port + "\n"
-							+ "ROOM_REF: " +"1"+ "\n"
-							+ "JOIN_ID: " + clients.indexOf(sock) + "\n")
+				sock.write("JOINED_CHATROOM: " + comps[0].split(' ')[1] + "\n" +
+					"SERVER_IP: " + addresses + "\n" +
+					"PORT: " + port + "\n" +
+					"ROOM_REF: " + "1" + "\n" +
+					"JOIN_ID: " + clients.indexOf(sock) + "\n")
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				console.log(chatMessageSplit(data))
-				sock.write("LEFT_CHATROOM: " +"1"+ "\n"
-							+ "JOIN_ID: " + clients.indexOf(sock) + "\n")
+				sock.write("LEFT_CHATROOM: " + "1" + "\n" +
+					"JOIN_ID: " + clients.indexOf(sock) + "\n")
 				clients.splice(clients.indexOf(sock), 1)
 				console.log("Clients:" + clients.length)
 			} else if (data.includes("DISCONNECT:")) {
