@@ -46,9 +46,9 @@ const requestHandler = (sock) => {
 		sock.on('data', function (data) {
 			if (data.includes("JOIN_CHATROOM:")) {
 				let comps = chatMessageSplit(data)
+				console.log(comps)
 				clients.push(sock)
 				console.log("Clients:" + clients.length)
-
 				sock.write("JOINED_CHATROOM: "+comps[0].split(' ')[1] + "\n"
 							+ "SERVER_IP: "+ addresses + "\n"
 							+ "PORT: " + port + "\n"
@@ -56,16 +56,12 @@ const requestHandler = (sock) => {
 							+ "JOIN_ID: " + clients.indexOf(sock) + "\n")
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				console.log(chatMessageSplit(data))
-				
 				sock.write("LEFT_CHATROOM: " +"1"+ "\n"
 							+ "JOIN_ID: " + clients.indexOf(sock) + "\n")
 				clients.splice(clients.indexOf(sock), 1)
 				console.log("Clients:" + clients.length)
-			} else if (data.includes("HELO")) {
-				sock.write(data +
-					"IP:" + addresses + "\n" +
-					"Port:" + port + "\n" +
-					"StudentID:13323109\n")
+			} else if (data.includes("DISCONNECT:")) {
+				sock.destroy()
 			}
 		})
 
