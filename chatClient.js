@@ -25,7 +25,9 @@ let terminate = function () {
 }
 
 client.connect(PORT, HOST, function () {
-	[join, leave, terminate].forEach(func => setTimeout(func, 1000))
+	setTimeout(join,1000)
+	setTimeout(leave,3000)
+	setTimeout(terminate,4000)
 })
 
 // Add a 'data' event handler for the client socket
