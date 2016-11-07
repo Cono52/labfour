@@ -4,17 +4,28 @@ let HOST = '0.0.0.0'
 let PORT = 3000
 
 let client = new net.Socket()
-client.connect(PORT, HOST, function () {
-	client.write("HELO BASE_TEST\n")
+
+let join = function () {
 	client.write("JOIN_CHATROOM: room1\n" +
 		"CLIENT_IP: 192.127.1.6\n" +
-		"PORT: 3000\n" +
+		"PORT: 0\n" +
 		"CLIENT_NAME: cono52\n")
-	setTimeout(function() {
-		client.write("LEAVE_CHATROOM: 1\n" +
+}
+
+let leave = function () {
+	client.write("LEAVE_CHATROOM: 1\n" +
 		"JOIN_ID: 1\n" +
 		"CLIENT_NAME: cono52\n")
-	}, 1000);
+}
+
+let terminate = function () {
+	client.write("DISCONNECT: 0" + "\n" +
+		"PORT: 0" + "\n" +
+		"CLIENT_NAME: cono52\n")
+}
+
+client.connect(PORT, HOST, function () {
+	[join, leave, terminate].forEach(func => setTimeout(func, 1000))
 })
 
 // Add a 'data' event handler for the client socket
