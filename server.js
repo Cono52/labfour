@@ -72,7 +72,9 @@ const requestHandler = (sock) => {
 		})
 
 		sock.on('close', function (data) {
-			clients.splice(clients.indexOf(sock), 1)
+			if(clients.indexOf(sock) !== -1){
+				clients.splice(clients.indexOf(sock), 1)
+			}
 			console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
 			console.log("Clients:" + clients.length)
 		})
