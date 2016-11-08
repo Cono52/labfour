@@ -12,6 +12,13 @@ let join = function () {
 		"CLIENT_NAME: cono52\n")
 }
 
+let message = function () {
+	client.write("CHAT: room1\n" +
+		"JOIN_ID: 192.127.1.6\n" +
+		"CLIENT_ID: cono52\n" +
+		"MESSAGE: Ullamcorper sem eu dui, curabitur vitae nulla, vulputate magna imperdiet at egestas.\n\n")
+}
+
 let leave = function () {
 	client.write("LEAVE_CHATROOM: 1\n" +
 		"JOIN_ID: 1\n" +
@@ -26,6 +33,7 @@ let terminate = function () {
 
 client.connect(PORT, HOST, function () {
 	setTimeout(join,1000)
+	setTimeout(message,2000)
 	setTimeout(leave,3000)
 	setTimeout(terminate,4000)
 })
