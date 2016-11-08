@@ -63,11 +63,12 @@ const requestHandler = (sock) => {
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
-				let leaver = sock
 				clients.forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(' ')[1] + "\n" +
-					"JOIN_ID: " + clients.indexOf(leaver) + "\n"))
-
-				clients.splice(clients.indexOf(sock), 1)
+					"JOIN_ID: " + comps[1].split(' ')[1] + "\n"))
+				
+				if(clients.indexOf(sock) !== -1){
+					clients.splice(clients.indexOf(sock), 1)
+				}
 				console.log("Clients:" + clients.length)
 			} else if (data.includes("DISCONNECT:")) {
 				sock.destroy()
