@@ -57,7 +57,7 @@ const requestHandler = (sock) => {
 			} else if (data.includes("MESSAGE:")){
 				let comps = chatMessageSplit(data)
 				console.log(comps)
-				clients.forEach(sock.write(comps[0] + "\n" +
+				clients.forEach(sock => sock.write(comps[0] + "\n" +
 					comps[2]  + "\n" +
 					comps[3] + "\n\n"))
 			} else if (data.includes("LEAVE_CHATROOM")) {
