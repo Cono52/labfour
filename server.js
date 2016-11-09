@@ -40,6 +40,8 @@ function chatMessageSplit(data) {
 
 const requestHandler = (sock) => {
 	if (toobusy()) {
+		sock.write("ERROR_CODE: " + [integer] + "\n" +
+			"ERROR_DESCRIPTION: Server overloaded..come back later.\n")
 		sock.destroy();
 	} else {
 		console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
