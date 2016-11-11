@@ -32,7 +32,7 @@ let terminate = function () {
 }
 
 client.connect(PORT, HOST, function () {
-	setTimeout(join,1000)
+	setTimeout(join, 1000)
 })
 
 // Add a 'data' event handler for the client socket

@@ -34,10 +34,10 @@ let terminate = function () {
 }
 
 client.connect(PORT, HOST, function () {
-	setTimeout(join,1000)
-	setTimeout(message,2000)
-	setTimeout(leave,3000)
-	setTimeout(terminate,4000)
+	setTimeout(join, 1000)
+	setTimeout(message, 2000)
+	setTimeout(leave, 3000)
+	setTimeout(terminate, 4000)
 })
 
 // Add a 'data' event handler for the client socket
@@ -51,7 +51,7 @@ function chatMessageSplit(data) {
 }
 
 client.on('data', function (data) {
-	if(data.includes("JOINED_CHATROOM:")){
+	if (data.includes("JOINED_CHATROOM:")) {
 		let comps = chatMessageSplit(data)
 		joinID = comps[4].split(' ')[1]
 	}

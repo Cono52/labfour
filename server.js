@@ -57,19 +57,19 @@ const requestHandler = (sock) => {
 					"PORT: " + port + "\n" +
 					"ROOM_REF: " + "1" + "\n" +
 					"JOIN_ID: " + id + "\n")
-			} else if (data.includes("MESSAGE:")){
+			} else if (data.includes("MESSAGE:")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
 				clients.forEach(sock => sock.write(comps[0] + "\n" +
-					comps[2]  + "\n" +
+					comps[2] + "\n" +
 					comps[3] + "\n\n"))
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
 				clients.forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(' ')[1] + "\n" +
 					"JOIN_ID: " + comps[1].split(' ')[1] + "\n"))
-				
-				if(clients.indexOf(sock) !== -1){
+
+				if (clients.indexOf(sock) !== -1) {
 					clients.splice(clients.indexOf(sock), 1)
 				}
 				console.log("Clients:" + clients.length)
@@ -79,7 +79,7 @@ const requestHandler = (sock) => {
 		})
 
 		sock.on('close', function (data) {
-			if(clients.indexOf(sock) !== -1){
+			if (clients.indexOf(sock) !== -1) {
 				clients.splice(clients.indexOf(sock), 1)
 			}
 			console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
