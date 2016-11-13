@@ -17,7 +17,7 @@ let join = function () {
 let message = function () {
 	client.write("CHAT: room1\n" +
 		"JOIN_ID: " + joinID + "\n" +
-		"CLIENT_ID: cono52\n" +
+		"CLIENT_NAME : cono52\n" +
 		"MESSAGE: Ullamcorper sem eu dui, curabitur vitae nulla, vulputate magna imperdiet at egestas.\n\n")
 }
 
