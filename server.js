@@ -56,8 +56,7 @@ const requestHandler = (sock) => {
 					"SERVER_IP: " + addresses + "\n" +
 					"PORT: " + port + "\n" +
 					"ROOM_REF: " + "1" + "\n" +
-					"JOIN_ID: " + id + "\n")
-				)
+					"JOIN_ID: " + id + "\n"))
 			} else if (data.includes("MESSAGE:")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
@@ -76,6 +75,16 @@ const requestHandler = (sock) => {
 				console.log("Clients:" + clients.length)
 			} else if (data.includes("DISCONNECT:")) {
 				sock.destroy()
+			} else if (data.includes("HELO")) {
+				sock.write(data +
+					"IP:" + addresses + "\n" +
+					"Port:" + port + "\n" +
+					"StudentID:13323109\n")
+
+			} else if (data.includes("KILL_SERVICE")) {
+				clients.forEach(sock => sock.destroy())
+				sock.destroy()
+				server.close()
 			}
 		})
 
