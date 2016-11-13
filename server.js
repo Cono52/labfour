@@ -57,7 +57,7 @@ const requestHandler = (sock) => {
 					"PORT: " + port + "\n" +
 					"ROOM_REF: " + "1" + "\n" +
 					"JOIN_ID: " + id + "\n")
-				clients.forEach(sock => sock.write(comps[3].split(':')[1]+"\n"))
+				clients.forEach(sock => sock.write("CHAT:"+comps[3].split(':')[1]+"\n"))
 			} else if (data.includes("MESSAGE:")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
