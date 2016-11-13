@@ -52,11 +52,12 @@ const requestHandler = (sock) => {
 				let id = Math.floor((Math.random() * 100000) + 1);
 				clients.push(sock)
 				console.log("Clients:" + clients.length)
-				clients.forEach(sock => sock.write("JOINED_CHATROOM: " + comps[0].split(' ')[1] + "\n" +
+				sock.write("JOINED_CHATROOM: " + comps[0].split(':')[1] + "\n" +
 					"SERVER_IP: " + addresses + "\n" +
 					"PORT: " + port + "\n" +
 					"ROOM_REF: " + "1" + "\n" +
-					"JOIN_ID: " + id + "\n"))
+					"JOIN_ID: " + id + "\n")
+				clients.forEach(sock => sock.write(comps[3].split(':')[1]+"\n"))
 			} else if (data.includes("MESSAGE:")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
@@ -66,8 +67,8 @@ const requestHandler = (sock) => {
 			} else if (data.includes("LEAVE_CHATROOM")) {
 				let comps = chatMessageSplit(data)
 				console.log(comps)
-				clients.forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(' ')[1] + "\n" +
-					"JOIN_ID: " + comps[1].split(' ')[1] + "\n"))
+				clients.forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
+					"JOIN_ID: " + comps[1].split(':')[1] + "\n"))
 
 				if (clients.indexOf(sock) !== -1) {
 					clients.splice(clients.indexOf(sock), 1)
