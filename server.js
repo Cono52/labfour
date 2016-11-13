@@ -4,13 +4,13 @@ const toobusy = require('toobusy-js')
 
 
 /*Default port*/
-let port = 3000
+let port = 4000
 
 let clients = []
 
 /*Try get specified port*/
 if (!process.argv[2]) {
-	console.log("You didnt enter a port...using port 3000")
+	console.log("You didnt enter a port...using port 4000")
 } else {
 	port = process.argv[2];
 }
