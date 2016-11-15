@@ -1,7 +1,7 @@
 let net = require('net')
 
 let HOST = '0.0.0.0'
-let PORT = 3000
+let PORT = 4000
 
 let client = new net.Socket()
 
