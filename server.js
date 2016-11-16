@@ -46,6 +46,7 @@ const requestHandler = (sock) => {
     } else {
         console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
         sock.on('data', function(data) {
+	    console.log(""+data)
             if (data.includes("JOIN_CHATROOM:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
@@ -57,14 +58,16 @@ const requestHandler = (sock) => {
                     "PORT: " + port + "\n" +
                     "ROOM_REF: " + "1" + "\n" +
                     "JOIN_ID: " + id + "\n")
-                clients.forEach(sock => sock.write("CHAT:" + comps[3].split(':')[1]+" joined room ref 1\n"))
+                clients.forEach(sock => sock.write("CHAT: 1\n" + 
+						"CLIENT_NAME: " + comps[3].split(':')[1]+"\n" + 
+						"MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n"))
             } else if (data.includes("MESSAGE:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
                 clients.forEach(sock => sock.write(comps[0] + "\n" +
                     comps[2] + "\n" +
                     comps[3] + "\n\n"))
-            } else if (data.includes("LEAVE_CHATROOM")) {
+            } else if (data.includes("LEAVE_CHATROOM:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
                 clients.forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
