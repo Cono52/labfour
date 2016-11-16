@@ -52,13 +52,12 @@ const requestHandler = (sock) => {
                 let id = Math.floor((Math.random() * 100000) + 1);
                 clients.push(sock)
                 console.log("Clients:" + clients.length)
-                sock.write("JOINED_CHATROOM: " + comps[0].split(':')[1] + "\n" +
+                sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
                     "SERVER_IP: " + addresses + "\n" +
                     "PORT: " + port + "\n" +
                     "ROOM_REF: " + "1" + "\n" +
                     "JOIN_ID: " + id + "\n")
-                clients.forEach(sock => sock.write("CHAT:" + comps[3].split(':')[1] + "\n" +
-                    "ROOM_REF:1\n"))
+                clients.forEach(sock => sock.write("CHAT:" + comps[3].split(':')[1]+" joined room ref 1\n"))
             } else if (data.includes("MESSAGE:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
