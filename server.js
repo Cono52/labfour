@@ -3,10 +3,10 @@ const os = require('os')
 const toobusy = require('toobusy-js')
 
 
-/*Default port*/
+/*Default port*/	
 let port = 4000
 
-let clients = []
+let rooms = {}
 
 /*Try get specified port*/
 if (!process.argv[2]) {
@@ -46,34 +46,26 @@ const requestHandler = (sock) => {
     } else {
         console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
         sock.on('data', function(data) {
-            if (data.includes("JOIN_CHATROOM:")) {
+            if (data.includes("JOIN_CHATROOM:")){
+	   	joinClient(sock,data) 
+	    } else if (data.includes("MESSAGE:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
-                let id = Math.floor((Math.random() * 100000) + 1);
-                clients.push(sock)
-                console.log("Clients:" + clients.length)
-                sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
-                    "SERVER_IP: " + addresses + "\n" +
-                    "PORT: " + port + "\n" +
-                    "ROOM_REF: " + "1" + "\n" +
-                    "JOIN_ID: " + id + "\n")
-                clients.forEach(sock => sock.write("CHAT:" + comps[3].split(':')[1]+" joined room ref 1\n"))
-            } else if (data.includes("MESSAGE:")) {
-                let comps = chatMessageSplit(data)
-                console.log(comps)
-                clients.forEach(sock => sock.write(comps[0] + "\n" +
+		let room_ref = comps[0].split(':')[1]
+                rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
                     comps[2] + "\n" +
                     comps[3] + "\n\n"))
             } else if (data.includes("LEAVE_CHATROOM")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
-                clients.forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
+		let room_ref = "room"+comps[0].split(': ')[1]
+                rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
                     "JOIN_ID: " + comps[1].split(':')[1] + "\n"))
 
-                if (clients.indexOf(sock) !== -1) {
-                    clients.splice(clients.indexOf(sock), 1)
-                }
-                console.log("Clients:" + clients.length)
+		if (rooms[room_ref].indexOf(sock) !== -1) {
+                	rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
+            	}
+                console.log("Clients left in "+room_ref+":" + rooms[room_ref].length)
             } else if (data.includes("DISCONNECT:")) {
                 sock.destroy()
             } else if (data.includes("HELO")) {
@@ -90,23 +82,57 @@ const requestHandler = (sock) => {
         })
 
         sock.on('close', function(data) {
-            if (clients.indexOf(sock) !== -1) {
-                clients.splice(clients.indexOf(sock), 1)
-            }
-            console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
-            console.log("Clients:" + clients.length)
+	    
+	    let clientRoom
+
+	    for (var key in rooms) {
+		if (rooms.hasOwnProperty(key)) {
+			if(rooms[key].includes(sock)){ 
+				clientRoom = key
+			}
+		}
+	    }
+            if (clientRoom != undefined && rooms[clientRoom].indexOf(sock) !== -1) {
+                rooms[clientRoom].splice(rooms[clientRoom].indexOf(sock), 1)
+            	console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
+            	console.log("Clients left in " + clientRoom + ":" + rooms[clientRoom].length)
+	    }
         })
     }
+}
+
+function joinClient(sock, data){
+	let comps = chatMessageSplit(data)
+	let room_ref = comps[0].split(':')[1] 
+	console.log(comps)
+	let id = Math.floor((Math.random() * 100000) + 1)
+	if(!rooms.hasOwnProperty(room_ref)){
+		rooms[room_ref] = []	
+		console.log("chatroom "+room_ref+" created...")
+		rooms[room_ref].push(sock)
+	}
+	else{
+		console.log("client added to existing chatroom "+room_ref)
+		rooms[room_ref].push(sock)
+		console.log("room_refs clients:"+rooms[room_ref].length)
+	}
+
+	sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
+			"SERVER_IP: " + addresses + "\n" +
+			"PORT: " + port + "\n" +
+			"ROOM_REF: " + "1" + "\n" +
+			"JOIN_ID: " + id + "\n")
+	rooms[room_ref].forEach(sock => sock.write("CHAT:" + comps[3].split(':')[1]+" joined " + room_ref + "\n"))
 }
 
 
 const server = net.createServer(requestHandler)
 
 server.listen(port, (err) => {
-    if (err) {
-        return console.log('something bad happened', err)
-    }
-    else {
-        return console.log(`Server is listening on ${port}`)
-    }
+	if (err) {
+		return console.log('something bad happened', err)
+	}
+	else {
+		return console.log(`Server is listening on ${port}`)
+	}
 })
