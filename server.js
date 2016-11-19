@@ -122,7 +122,9 @@ function joinClient(sock, data){
 			"PORT: " + port + "\n" +
 			"ROOM_REF: " + "1" + "\n" +
 			"JOIN_ID: " + id + "\n")
-	rooms[room_ref].forEach(sock => sock.write("CHAT:" + comps[3].split(':')[1]+" joined " + room_ref + "\n"))
+        rooms[room_ref].forEach(sock => sock.write("CHAT:" + room_ref[room_ref.length-1] + "\n" + 
+ 				"CLIENT_NAME: " + comps[3].split(':')[1]+"\n" + 
+ 				"MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n"))
 }
 
 
