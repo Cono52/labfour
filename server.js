@@ -49,12 +49,7 @@ const requestHandler = (sock) => {
             if (data.includes("JOIN_CHATROOM:")){
 	   	joinClient(sock,data) 
 	    } else if (data.includes("MESSAGE:")) {
-                let comps = chatMessageSplit(data)
-                console.log(comps)
-		let room_ref = comps[0].split(':')[1]
-                rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
-                    comps[2] + "\n" +
-                    comps[3] + "\n\n"))
+		messageRoom(sock, data)
             } else if (data.includes("LEAVE_CHATROOM:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
@@ -125,6 +120,15 @@ function joinClient(sock, data){
         rooms[room_ref].forEach(sock => sock.write("CHAT:" + room_ref[room_ref.length-1] + "\n" + 
  				"CLIENT_NAME: " + comps[3].split(':')[1]+"\n" + 
  				"MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n"))
+}
+
+function messageRoom(sock, data){
+	let comps = chatMessageSplit(data)
+	console.log(comps)
+	let room_ref = comps[0].split(':')[1]
+        rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
+		comps[2] + "\n" +
+		comps[3] + "\n\n"))
 }
 
 
