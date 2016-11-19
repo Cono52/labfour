@@ -51,16 +51,7 @@ const requestHandler = (sock) => {
 	    } else if (data.includes("MESSAGE:")) {
 		messageRoom(sock, data)
             } else if (data.includes("LEAVE_CHATROOM:")) {
-                let comps = chatMessageSplit(data)
-                console.log(comps)
-		let room_ref = "room"+comps[0].split(': ')[1]
-                rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
-                    "JOIN_ID: " + comps[1].split(':')[1] + "\n"))
-
-		if (rooms[room_ref].indexOf(sock) !== -1) {
-                	rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
-            	}
-                console.log("Clients left in "+room_ref+": " + rooms[room_ref].length+"\n")
+		leaveRoom(sock, data)
             } else if (data.includes("DISCONNECT:")) {
                 sock.destroy()
             } else if (data.includes("HELO")) {
@@ -131,6 +122,17 @@ function messageRoom(sock, data){
 		comps[3] + "\n\n"))
 }
 
+function leaveRoom(sock, data){
+	let comps = chatMessageSplit(data)
+	console.log(comps)
+	let room_ref = "room"+comps[0].split(': ')[1]
+	rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
+		"JOIN_ID: " + comps[1].split(':')[1] + "\n"))
+	if (rooms[room_ref].indexOf(sock) !== -1) {
+		rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
+	}
+	console.log("Clients left in "+room_ref+": " + rooms[room_ref].length+"\n")
+}
 
 const server = net.createServer(requestHandler)
 
