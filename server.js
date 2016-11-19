@@ -55,7 +55,7 @@ const requestHandler = (sock) => {
                 rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
                     comps[2] + "\n" +
                     comps[3] + "\n\n"))
-            } else if (data.includes("LEAVE_CHATROOM")) {
+            } else if (data.includes("LEAVE_CHATROOM:")) {
                 let comps = chatMessageSplit(data)
                 console.log(comps)
 		let room_ref = "room"+comps[0].split(': ')[1]
