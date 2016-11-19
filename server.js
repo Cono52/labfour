@@ -65,7 +65,7 @@ const requestHandler = (sock) => {
 		if (rooms[room_ref].indexOf(sock) !== -1) {
                 	rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
             	}
-                console.log("Clients left in "+room_ref+":" + rooms[room_ref].length)
+                console.log("Clients left in "+room_ref+": " + rooms[room_ref].length+"\n")
             } else if (data.includes("DISCONNECT:")) {
                 sock.destroy()
             } else if (data.includes("HELO")) {
@@ -114,7 +114,7 @@ function joinClient(sock, data){
 	else{
 		console.log("client added to existing chatroom "+room_ref)
 		rooms[room_ref].push(sock)
-		console.log("room_refs clients:"+rooms[room_ref].length)
+		console.log(room_ref+" clients: "+rooms[room_ref].length)
 	}
 
 	sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
