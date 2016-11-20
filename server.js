@@ -91,13 +91,12 @@ const requestHandler = (sock) => {
 
 const server = net.createServer(requestHandler)
 
-server.listen(port, (err) => {
-	if (err) {
-		return console.log('something bad happened', err)
-	}
-	else {
-		return console.log(`Server is listening on ${port}`)
-	}
+server.listen(port, () => {
+	console.log("Listening to port " + port)
+})
+
+server.on('error', (err) => {
+	console.log("Something unexpected happend :" + err)
 })
 
 
