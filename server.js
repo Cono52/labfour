@@ -37,6 +37,7 @@ function chatMessageSplit(data) {
 	array = array.slice(0, array.length - 1)
 	return array;
 }
+
 const requestHandler = (sock) => {
 	sock.setEncoding('utf8');
 	if (toobusy()) {
@@ -45,8 +46,10 @@ const requestHandler = (sock) => {
 		sock.destroy();
 	} else {
 		console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)			
-		sock.on('data', function (data) {
-			if (data.includes("JOIN_CHATROOM:")) {
+		sock.on('data', function (dat) {
+			data = chatMessageSplit(dat)
+			console.log(data)
+			if (data[0].includes("JOIN_CHATROOM:")) {
 				joinClient(sock, data)
 			} else if (data.includes("MESSAGE:")) {
 				messageRoom(sock, data)
@@ -54,7 +57,7 @@ const requestHandler = (sock) => {
 				leaveRoom(sock, data)
 			} else if (data.includes("DISCONNECT:")) {
 				sock.destroy()
-			} else if (data.includes("HELO")) {
+			} else if (data[0].includes("HELO")) {
 				sock.write(data +
 					"IP:" + addresses + "\n" +
 					"Port:" + port + "\n" +
@@ -87,9 +90,8 @@ const requestHandler = (sock) => {
 }
 
 function joinClient(sock, data) {
-	let comps = chatMessageSplit(data)
+	let comps = data
 	let room_ref = comps[0].split(':')[1]
-	console.log(comps)
 	let id = Math.floor((Math.random() * 100000) + 1)
 	if (!rooms.hasOwnProperty(room_ref)) {
 		rooms[room_ref] = []
@@ -113,8 +115,6 @@ function joinClient(sock, data) {
 }
 
 function messageRoom(sock, data) {
-	let comps = chatMessageSplit(data)
-	console.log(comps)
 	let room_ref = comps[0].split(':')[1]
 	rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
 		comps[2] + "\n" +
@@ -122,8 +122,6 @@ function messageRoom(sock, data) {
 }
 
 function leaveRoom(sock, data) {
-	let comps = chatMessageSplit(data)
-	console.log(comps)
 	let room_ref = " room" + comps[0].split(': ')[1]
 	console.log(room_ref)
 	rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
