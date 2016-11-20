@@ -51,10 +51,10 @@ const requestHandler = (sock) => {
 			console.log(data)
 			if (data[0].includes("JOIN_CHATROOM:")) {
 				ch.joinClient(sock, data)
-			} else if (data[0].includes("MESSAGE:")) {
-				ch.messageRoom(sock, data)
 			} else if (data[0].includes("LEAVE_CHATROOM:")) {
 				ch.leaveRoom(sock, data)
+		 	} else if (dat.includes("MESSAGE:")) {
+				ch.messageRoom(sock, data)
 			} else if (data[0].includes("DISCONNECT:")) {
 				sock.destroy()
 			} else if (data[0].includes("HELO")) {
@@ -128,7 +128,7 @@ const ch = {
 
 	messageRoom: function (sock, data) {
         let comps = data
-        let room_ref = comps[0].split(':')[1]
+        let room_ref = " room"+comps[0].split(': ')[1]
         rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
             comps[2] + "\n" +
             comps[3] + "\n\n"))
