@@ -50,19 +50,19 @@ const requestHandler = (sock) => {
 			data = chatMessageSplit(dat)
 			console.log(data)
 			if (data[0].includes("JOIN_CHATROOM:")) {
-				joinClient(sock, data)
-			} else if (data.includes("MESSAGE:")) {
-				messageRoom(sock, data)
-			} else if (data.includes("LEAVE_CHATROOM:")) {
-				leaveRoom(sock, data)
-			} else if (data.includes("DISCONNECT:")) {
+				ch.joinClient(sock, data)
+			} else if (data[0].includes("MESSAGE:")) {
+				ch.messageRoom(sock, data)
+			} else if (data[0].includes("LEAVE_CHATROOM:")) {
+				ch.leaveRoom(sock, data)
+			} else if (data[0].includes("DISCONNECT:")) {
 				sock.destroy()
 			} else if (data[0].includes("HELO")) {
 				sock.write(data +
 					"IP:" + addresses + "\n" +
 					"Port:" + port + "\n" +
 					"StudentID:13323109\n")
-			} else if (data.includes("KILL_SERVICE")) {
+			} else if (data[0].includes("KILL_SERVICE")) {
 				sock.destroy()
 				server.close()
 			}
@@ -89,49 +89,6 @@ const requestHandler = (sock) => {
 	}
 }
 
-function joinClient(sock, data) {
-	let comps = data
-	let room_ref = comps[0].split(':')[1]
-	let id = Math.floor((Math.random() * 100000) + 1)
-	if (!rooms.hasOwnProperty(room_ref)) {
-		rooms[room_ref] = []
-		console.log("chatroom " + room_ref + " created...")
-		rooms[room_ref].push(sock)
-	}
-	else {
-		console.log("client added to existing chatroom " + room_ref)
-		rooms[room_ref].push(sock)
-		console.log(room_ref + " clients: " + rooms[room_ref].length)
-	}
-
-	sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
-		"SERVER_IP: " + addresses + "\n" +
-		"PORT: " + port + "\n" +
-		"ROOM_REF: " + "1" + "\n" +
-		"JOIN_ID: " + id + "\n")
-	rooms[room_ref].forEach(sock => sock.write("CHAT:" + room_ref[room_ref.length - 1] + "\n" +
-		"CLIENT_NAME: " + comps[3].split(':')[1] + "\n" +
-		"MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n"))
-}
-
-function messageRoom(sock, data) {
-	let room_ref = comps[0].split(':')[1]
-	rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
-		comps[2] + "\n" +
-		comps[3] + "\n\n"))
-}
-
-function leaveRoom(sock, data) {
-	let room_ref = " room" + comps[0].split(': ')[1]
-	console.log(room_ref)
-	rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
-		"JOIN_ID: " + comps[1].split(':')[1] + "\n"))
-	if (rooms[room_ref].indexOf(sock) !== -1) {
-		rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
-	}
-	console.log("Clients left in " + room_ref + ": " + rooms[room_ref].length + "\n")
-}
-
 const server = net.createServer(requestHandler)
 
 server.listen(port, (err) => {
@@ -142,3 +99,52 @@ server.listen(port, (err) => {
 		return console.log(`Server is listening on ${port}`)
 	}
 })
+
+
+const ch = {
+
+	joinClient: function (sock, data) {
+        let comps = data
+        let room_ref = comps[0].split(':')[1]
+        let id = Math.floor((Math.random() * 100000) + 1)
+        if (!rooms.hasOwnProperty(room_ref)) {
+            rooms[room_ref] = []
+            console.log("chatroom " + room_ref + " created...")
+            rooms[room_ref].push(sock)
+        }
+        else {
+            console.log("client added to existing chatroom " + room_ref)
+            rooms[room_ref].push(sock)
+            console.log(room_ref + " clients: " + rooms[room_ref].length)
+        }
+        sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
+            "SERVER_IP: " + addresses + "\n" +
+            "PORT: " + port + "\n" +
+            "ROOM_REF: " + "1" + "\n" +
+            "JOIN_ID: " + id + "\n")
+        rooms[room_ref].forEach(sock => sock.write("CHAT:" + room_ref[room_ref.length - 1] + "\n" +
+            "CLIENT_NAME: " + comps[3].split(':')[1] + "\n" +
+            "MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n"))
+    },
+
+	messageRoom: function (sock, data) {
+        let comps = data
+        let room_ref = comps[0].split(':')[1]
+        rooms[room_ref].forEach(sock => sock.write(comps[0] + "\n" +
+            comps[2] + "\n" +
+            comps[3] + "\n\n"))
+    },
+
+	leaveRoom: function (sock, data) {
+        let comps = data
+        let room_ref = " room" + comps[0].split(': ')[1]
+        console.log(room_ref)
+        rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
+            "JOIN_ID: " + comps[1].split(':')[1] + "\n"))
+        if (rooms[room_ref].indexOf(sock) !== -1) {
+            rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
+        }
+        console.log("Clients left in " + room_ref + ": " + rooms[room_ref].length + "\n")
+    }
+
+}
