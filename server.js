@@ -119,11 +119,11 @@ const ch = {
         sock.write("JOINED_CHATROOM:" + comps[0].split(':')[1] + "\n" +
             "SERVER_IP: " + addresses + "\n" +
             "PORT: " + port + "\n" +
-            "ROOM_REF: " + "1" + "\n" +
+            "ROOM_REF: " + room_ref[room_ref.length-1] + "\n" +
             "JOIN_ID: " + id + "\n")
-        rooms[room_ref].forEach(sock => sock.write("CHAT:" + room_ref[room_ref.length - 1] + "\n" +
+        rooms[room_ref].forEach(sock => sock.write("CHAT: " + room_ref[room_ref.length - 1] + "\n" +
             "CLIENT_NAME: " + comps[3].split(':')[1] + "\n" +
-            "MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n"))
+            "MESSAGE:" + comps[3].split(':')[1] + " has joined this chatroom.\n\n"))
     },
 
 	messageRoom: function (sock, data) {
@@ -138,8 +138,11 @@ const ch = {
         let comps = data
         let room_ref = " room" + comps[0].split(': ')[1]
         console.log(room_ref)
-        rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
-            "JOIN_ID: " + comps[1].split(':')[1] + "\n"))
+        sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
+            "JOIN_ID: " + comps[1].split(':')[1] + "\n")
+	rooms[room_ref].forEach(sock => sock.write('CHAT:' + comps[0].split(': ')[1] + '\n' +
+				'CLIENT_NAME:' + comps[2].split(': ')[1] + '\n' +
+				'MESSAGE:' + comps[2].split(': ')[1] + ' has left this chatroom.\n\n'))
         if (rooms[room_ref].indexOf(sock) !== -1) {
             rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
         }
