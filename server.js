@@ -37,14 +37,14 @@ function chatMessageSplit(data) {
 	array = array.slice(0, array.length - 1)
 	return array;
 }
-
 const requestHandler = (sock) => {
+	sock.setEncoding('utf8');
 	if (toobusy()) {
 		sock.write("ERROR_CODE: 503\n" +
 			"ERROR_DESCRIPTION: Server overloaded..come back later.\n")
 		sock.destroy();
 	} else {
-		console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
+		console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)			
 		sock.on('data', function (data) {
 			if (data.includes("JOIN_CHATROOM:")) {
 				joinClient(sock, data)
@@ -60,7 +60,6 @@ const requestHandler = (sock) => {
 					"Port:" + port + "\n" +
 					"StudentID:13323109\n")
 			} else if (data.includes("KILL_SERVICE")) {
-				clients.forEach(sock => sock.destroy())
 				sock.destroy()
 				server.close()
 			}
@@ -80,6 +79,9 @@ const requestHandler = (sock) => {
 				console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
 				console.log("Clients left in " + clientRoom + ":" + rooms[clientRoom].length)
 			}
+		})
+		sock.on('error', function (err){
+			console.log(err)
 		})
 	}
 }
@@ -122,7 +124,8 @@ function messageRoom(sock, data) {
 function leaveRoom(sock, data) {
 	let comps = chatMessageSplit(data)
 	console.log(comps)
-	let room_ref = "room" + comps[0].split(': ')[1]
+	let room_ref = " room" + comps[0].split(': ')[1]
+	console.log(room_ref)
 	rooms[room_ref].forEach(sock => sock.write("LEFT_CHATROOM: " + comps[0].split(':')[1] + "\n" +
 		"JOIN_ID: " + comps[1].split(':')[1] + "\n"))
 	if (rooms[room_ref].indexOf(sock) !== -1) {
