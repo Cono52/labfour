@@ -56,7 +56,7 @@ const requestHandler = (sock) => {
 		 	} else if (dat.includes("MESSAGE:")) {
 				ch.messageRoom(sock, data)
 			} else if (data[0].includes("DISCONNECT:")) {
-				sock.destroy()
+				ch.disconnectClient(sock, data)
 			} else if (data[0].includes("HELO")) {
 				sock.write(data +
 					"IP:" + addresses + "\n" +
@@ -147,6 +147,24 @@ const ch = {
             rooms[room_ref].splice(rooms[room_ref].indexOf(sock), 1)
         }
         console.log("Clients left in " + room_ref + ": " + rooms[room_ref].length + "\n")
-    }
+    },
 
+	disconnectClient: function(sock, data) {
+		let clientName = data[2].split(': ')[1]
+		let clientRooms = []
+		for (var key in rooms) {
+			if (rooms.hasOwnProperty(key)) {
+				if (rooms[key].includes(sock)) {
+					clientRooms.push(key)
+				}
+			}
+		}
+		clientRooms.forEach(
+			room => rooms[room].forEach(sock => sock.write('CHAT:' + room[room.length-1] + '\n' +
+					'CLIENT_NAME:' + clientName + '\n' +
+					'MESSAGE:' + clientName + ' has left this chatroom.\n\n')))
+		
+		sock.end();
+		sock.destroy();
+	}
 }
